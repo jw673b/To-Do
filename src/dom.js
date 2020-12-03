@@ -19,10 +19,11 @@ function updateTasks() {
     for (let i = 0;i < keys.length;i++) {
         const tempProject = document.querySelector(`#${keys[i]}`);
         const listTasks = projects[keys[i]];
-        let displayedTasks = tempProject.childNodes;
-        displayedTasks = Array.from(displayedTasks);
-        displayedTasks = displayedTasks.slice(2);
-        if (listTasks.length > displayedTasks.length) {
+        console.log(listTasks);
+        let projectChildren = tempProject.childNodes;
+        projectChildren = Array.from(projectChildren);
+        projectChildren = projectChildren.slice(3);
+        if (listTasks.length > projectChildren.length) {
             const tempTask = addDOMItem(tempProject,"","task",listTasks[listTasks.length-1].title);
         };
     };
