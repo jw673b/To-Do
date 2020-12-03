@@ -20,4 +20,4 @@ function addNewProject() {
     console.log(projects);
 };
 
-export {addNewTask, addNewProject, task, projects};
+export {addNewTask, addNewProject, task, projects}; 

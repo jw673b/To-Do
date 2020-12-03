@@ -76,62 +76,110 @@ function renderTaskForms() {
         projectDomItems = Array.from(projectDomItems);
     let taskFormDomItems = document.querySelectorAll(".task-form");
         taskFormDomItems = Array.from(taskFormDomItems);
-        console.log(taskFormDomItems)
+    function labelOf(item) {
+        const label = document.createElement("label");
+        label.innerText = item.id.replace("-"," ");
+        label.class = "label";
+        label.htmlFor = item.id;
+        return label
+    }
     if (projectDomItems.length > taskFormDomItems.length) {
         const dif = projectDomItems.length - taskFormDomItems.length;
         for (let i = (projectDomItems.length - dif);i<projectDomItems.length;i++) {
             const project = projectDomItems[i]
             const taskForm = document.createElement("form");
             taskForm.className = "task-form";
-            const title = document.createElement("input");
+            //form inputs
+            function titleObj() {
+                const div = document.createElement("div");
+                const title = document.createElement("input");
                 title.type = "text";
-                title.id = "task-title";
-                
-            const description = document.createElement("input");
+                title.id = "task-title"
+                const titleLabel = labelOf(title);
+                div.appendChild(titleLabel);
+                div.appendChild(title);
+                return div;
+            };
+            function descriptionObj() {
+                const div = document.createElement("div");
+                const description = document.createElement("input");
                 description.type = "text";
-            const date = document.createElement("div");
+                description.id = "description";
+                const descriptionLabel = labelOf(description);
+                div.appendChild(descriptionLabel);
+                div.appendChild(description);
+                return div;
+            }
+            function dateObj() {
+                function today() {
+                    const date = new Date;
+                    const year = String(date.getFullYear()).padStart(4,0);
+                    const month = String(date.getMonth()).padStart(2,0);
+                    const day = String(date.getDay()).padStart(2,0);
+                    return (year + "-" + month + "-" + day)
+                };
+                const div = document.createElement("div");
+                const date = document.createElement("input");
                 date.type = "date";
-            const priority = document.createElement("div");
+                date.value = today();
+                date.id = "date";
+                const dateLabel = labelOf(date);
+                div.appendChild(dateLabel);
+                div.appendChild(date);
+                return div;
+            }
+            function priorityObj() {
+                const priority = document.createElement("div");
                 const priorityLabel = document.createElement("h2");
-                    priorityLabel.innerText = "Priority:";
-                    priority.appendChild(priorityLabel);
+                priorityLabel.innerText = "Priority:";
+                priority.appendChild(priorityLabel);
                 const priorityArr = ["high", "moderate", "low"];
                 priorityArr.forEach(function(item) {
                     const temp = document.createElement("input");
                     temp.type = "radio";
-                    temp.id = `priority-${item}`;
+                    temp.id = `${item}`;
                     temp.value = `priority-${item}`;
                     temp.name = "priority-level";
                     temp.innerText = item;
+                    const tempLabel = labelOf(temp);
+                    if (tempLabel.innerText === "moderate") {
+                        temp.setAttribute("checked","true");
+                    };
                     priority.appendChild(temp)
-                    const label = document.createElement("label");
-                    label.htmlFor = temp;
-                    label.innerText = item;
-                    priority.appendChild(label);
+                    priority.appendChild(tempLabel);
                 });
-            const completed = document.createElement("div");
-                const completedLabel = document.createElement("h2");
-                    completedLabel.innerText = "Status";
-                    completed.appendChild(completedLabel);
-                const completedArr = ["not completed","in progress","completed"];
-                    completedArr.forEach(function(status) {
-                    const temp = document.createElement("input");
-                    temp.type = "radio";
-                    temp.id = status.replace(" ","-");
-                    temp.value = status.replace(" ","-");
-                    temp.name = "completed-status";
-                    temp.innerText = status;
-                    completed.appendChild(temp);
-                    const label = document.createElement("label");
-                    label.htmlFor = temp;
-                    label.innerText = status;
-                    completed.appendChild(label);
+                return priority;
+            };
+            function statusObj() {
+                const status = document.createElement("div");
+                const statusTitle = document.createElement("h2");
+                statusTitle.innerText = "Status";
+                status.appendChild(statusTitle);
+                const statusArr = ["not started","in progress","completed"];
+                statusArr.forEach(function(val) {
+                    const el = document.createElement("input");
+                        el.type = "radio";
+                        el.id = val.replace(" ","-");
+                        el.value = val.replace(" ","-");
+                        el.name = "completed-status";
+                        el.innerText = val;
+                    const elLabel = labelOf(el);
+                    if (elLabel.innerText === "not started") {
+                        el.setAttribute("checked","true");
+                    };
+                    status.appendChild(el);
+                    status.appendChild(elLabel);
                 });
-            const submit = document.createElement("input");
+                return status;
+            };
+            function submitObj() {
+                const submit = document.createElement("input");
                 submit.type = "submit";
                 submit.id = "submit";
                 submit.innerText = "Submit";
-            const formItems = [title, description, date, priority, completed, submit];
+                return submit;
+            }
+            const formItems = [titleObj(), descriptionObj(), dateObj(), priorityObj(), statusObj(), submitObj()];
             formItems.forEach(function(item) {
                 taskForm.appendChild(item);
             });
