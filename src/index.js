@@ -1,8 +1,7 @@
-import {test} from './dom.js'
-import{createNewProj, addNewTask, addNewProject, task, projects, pullTaskInfo, completeTask} from './logic.js';
-import {renderProjects, renderHeader, updateProjects, updateTask, toggleTaskForm} from './dom.js';
+import{addNewTask, addNewProject, completeTask,loadSavedKeys} from './logic.js';
+import {renderProjects, renderHeader, updateProjects, updateTask, toggleTaskForm, removeTask} from './dom.js';
 import css from './style.css';
-
+loadSavedKeys();
 renderHeader();
 renderProjects();
 
@@ -14,6 +13,7 @@ function newProjectListeners() {
     addListener(newProjectBtn,addNewProject);
     addListener(newProjectBtn,updateProjects);
     addListener(newProjectBtn,addSubmitListeners);
+    addListener(newProjectBtn,addCancelListeners);
     addListener(newProjectBtn,addTaskBtnListeners);
 };
 function addSubmitListeners() {
@@ -26,6 +26,15 @@ function addSubmitListeners() {
     submitBtns.forEach(btn => btn.addEventListener("click", addNewTask));
     submitBtns.forEach(btn => btn.addEventListener("click", updateTask));
     submitBtns.forEach(btn => btn.addEventListener("click", toggleTaskForm));
+};
+function addCancelListeners() {
+    function arr() {
+        let btns = document.querySelectorAll(".cancel");
+        btns = Array.from(btns);
+        return btns;
+    };
+    const cancelBtns = arr();
+    cancelBtns.forEach(btn => btn.addEventListener("click", toggleTaskForm));
 };
 function addTaskBtnListeners() {
     function arr() {
@@ -47,10 +56,9 @@ function addCompleteBtnListeners() {
     completeBtns.forEach(btn => btn.addEventListener("click", removeTask));
 };
 
-
-
 newProjectListeners();
 addSubmitListeners();
+addCancelListeners();
 addTaskBtnListeners();
 addCompleteBtnListeners();
 

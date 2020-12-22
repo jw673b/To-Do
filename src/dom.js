@@ -1,5 +1,4 @@
-import {createNewProj, addNewTask, task, projects, completeTask} from './logic.js';
-import addListener from "./index.js";
+import {projects, completeTask} from './logic.js';
 
 const content = document.querySelector("#content");
 const header = document.createElement("div");
@@ -26,15 +25,24 @@ function completedBtn() {
     completedBtn.addEventListener("click",removeTask);
     return completedBtn;
 }
+function today() {
+    const date = new Date;
+    const year = String(date.getFullYear()).padStart(4,0);
+    const month = String(date.getMonth()+1).padStart(2,0);
+    const day = String(date.getDate()).padStart(2,0);
+    return (year + "-" + month + "-" + day)
+};
 //tasks
 function renderTasks(key,project) {
-    const tasks = projects[key];
+    const tasks = projects[key];//list of all tasks for a specified project
     for (let i = 0;i < tasks.length;i++) {
-        const task = addDOMItem(project,`${tasks[i].project}-${tasks[i].index}`,"task");
-        for (let j = 0;j < 3;j++) {
-            addDOMItem(task,`${tasks[i].title}-${taskPropKeys[j]}`,taskPropKeys[j],tasks[i][taskPropKeys[j]]);
+        if (tasks[i].status !== "completed") {
+            const task = addDOMItem(project,`${tasks[i].project}-${tasks[i].index}`,"task");
+            for (let j = 0;j < 3;j++) {
+                addDOMItem(task,`${tasks[i].title}-${taskPropKeys[j]}`,taskPropKeys[j],tasks[i][taskPropKeys[j]]);
+            };
+            task.appendChild(completedBtn());
         };
-        task.appendChild(completedBtn());
     };
 };
 function updateTask(e) {
@@ -53,9 +61,22 @@ function removeTask(e) {
     project.removeChild(task);
 };
 function toggleTaskForm(e) {
+    function setDefaults(inputs) {
+        inputs[0].childNodes[1].value = ""; // description
+        inputs[1].childNodes[1].value = today(); // date
+        inputs[2].childNodes[3].checked = true; // priority
+    };
     if (e.target.className === "submit") {
         const taskForm = e.target.parentNode;
         taskForm.style.display = "none";
+        const formInputs = taskForm.childNodes;
+        setDefaults(formInputs);
+    } else if (e.target.className === "cancel") {
+        e.preventDefault();
+        const taskForm = e.target.parentNode;
+        taskForm.style.display = "none";
+        const formInputs = taskForm.childNodes;
+        setDefaults(formInputs);
     } else if (e.target.className === "addTaskBtn") {
         const taskForm = e.target.parentNode.childNodes[2];
         taskForm.style.display = "block";
@@ -88,13 +109,6 @@ function renderTaskForm(project) {
         return div;
     }
     function dateObj() {
-        function today() {
-            const date = new Date;
-            const year = String(date.getFullYear()).padStart(4,0);
-            const month = String(date.getMonth()+1).padStart(2,0);
-            const day = String(date.getDate()).padStart(2,0);
-            return (year + "-" + month + "-" + day)
-        };
         const div = document.createElement("div");
         const date = document.createElement("input");
         date.type = "date";
@@ -129,36 +143,19 @@ function renderTaskForm(project) {
         });
         return priority;
     };
-    function statusObj() {
-        const status = document.createElement("div");
-        const statusTitle = document.createElement("h2");
-        statusTitle.innerText = "Status";
-        status.appendChild(statusTitle);
-        const statusArr = ["not started","completed"];
-        statusArr.forEach(function(val) {
-            const el = document.createElement("input");
-                el.type = "radio";
-                el.id = val.replace(" ","-");
-                el.value = val.replace(" ","-");
-                el.name = "completed-status";
-                el.innerText = val;
-            const elLabel = labelOf(el);
-            if (elLabel.innerText === "Not Started") {
-                el.setAttribute("checked","true");
-            };
-            status.appendChild(el);
-            status.appendChild(elLabel);
-        });
-        return status;
-    };
     function submitObj() {
         const submit = document.createElement("input");
         submit.type = "submit";
         submit.className = "submit";
-        submit.innerText = "Submit";
         return submit;
     }
-    const formItems = [descriptionObj(), dateObj(), priorityObj(), statusObj(), submitObj()];
+    function cancelObj() {
+        const cancel = document.createElement("button");
+        cancel.className = "cancel";
+        cancel.innerText = "Cancel";
+        return cancel;
+    }
+    const formItems = [descriptionObj(), dateObj(), priorityObj(), submitObj(),cancelObj()];
     formItems.forEach(function(item) {
         taskForm.appendChild(item);
     });
@@ -189,8 +186,11 @@ function updateProjects() {
         renderTasks(tempProject.id,tempProject);
     };
 };
-function addProjectModal() {
+function renderProjectModal() {
 
 };
+function toggleProjectModal() {
+
+}
 
 export {renderProjects, renderHeader, updateTask, updateProjects,toggleTaskForm,removeTask};
